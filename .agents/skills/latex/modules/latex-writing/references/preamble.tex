@@ -1,0 +1,135 @@
+% Standard preamble for literate programming documents
+% Copy this file verbatim to doc/preamble.tex in new projects
+%
+% This preamble is shared across all literate programming projects.
+% The main document (e.g., doc/main.tex) should \input{preamble} after
+% \documentclass but before \begin{document}.
+
+% Font setup.  Under pdfLaTeX these are REQUIRED: without [T1]{fontenc} a
+% monospace [[code]] quote (or \texttt) cannot select a T1 typewriter shape and
+% silently falls back to the proportional OT1 roman font -- i.e. monospace
+% "disappears".  iftex guards them so this preamble stays safe when copied into
+% a LuaLaTeX/XeLaTeX project (which already use Unicode fonts and need neither).
+% Do NOT comment these out.  See latex-writing's references/unicode-and-fonts.md
+% ("Symptom 2").
+\usepackage{iftex}
+\ifpdftex
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\fi
+\usepackage[swedish,british]{babel}
+\usepackage{booktabs}
+
+\usepackage{noweb}
+\noweboptions{shift,breakcode,longxref,longchunks}
+
+% Verbose citation style: full reference on first use, short form on
+% repeats.  This goes with memoir + didactic: didactic sets
+% autocite=footnote and places footnotes in the margin, so \autocite
+% yields the full reference as a margin note.  Without memoir+didactic
+% verbose footnotes land at the page foot; use alphabetic/authoryear
+% there instead.  Cite with \autocite in body text; inside \ltnote or any
+% \marginpar use \parencite (a footnote inside a margin float is fatal:
+% "Float(s) lost").
+\usepackage[
+  natbib,
+  backend=biber,
+  style=verbose,
+  citestyle=verbose,
+  singletitle=false,
+  maxbibnames=99,
+]{biblatex}
+\addbibresource{bibliography.bib}
+
+\usepackage[inline]{enumitem}
+\setlist[enumerate]{label=(\arabic*)}
+
+\usepackage[all]{foreign}
+\renewcommand{\foreignfullfont}{}
+\renewcommand{\foreignabbrfont}{}
+
+%\usepackage{newclude}
+\usepackage{import}
+
+\usepackage[strict]{csquotes}
+\usepackage[single]{acro}
+
+\usepackage{subcaption}
+
+\usepackage[noend]{algpseudocode}
+\usepackage{xparse}
+
+\let\email\texttt
+
+%\usepackage[outputdir=ltxobj]{minted}
+\usepackage{minted}
+\setminted{autogobble}
+
+\usepackage{pythontex}
+\setpythontexoutputdir{.}
+\setpythontexworkingdir{..}
+
+\usepackage{fancyvrb}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{thmtools}
+\usepackage[unq]{unique}
+\DeclareMathOperator{\powerset}{\mathcal{P}}
+
+\usepackage[binary-units]{siunitx}
+
+\usepackage{pgf}
+
+\usepackage[colorlinks]{hyperref}
+\usepackage[capitalize]{cleveref}
+\crefalias{question}{item}
+\crefname{question}{question}{questions}
+\Crefname{question}{Question}{Questions}
+\creflabelformat{question}{#2\textup{#1}#3}
+
+% adapted from https://tex.stackexchange.com/a/30726/17418
+\newcommand\chnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+\usepackage[marginparmargin=right]{didactic}
+
+% Make noweb's hyperlinked identifiers safe in headings (chapter/section titles
+% that contain a [[code]] quote).  With -index, such a quote weaves into a
+% \nwlinkedidentq hyperlink; in a moving argument (the .toc, the running header,
+% the PDF bookmark) stock noweb.sty's self-redefining \nwhyperreference fails
+% fatally under newer TeX Live ("Undefined control sequence \hyper@@link" /
+% "\Hy@reserved@a", or a stack overflow).
+%
+% noweb.sty from the dbosk fork (integration branch, Aug 2026 onwards) already
+% declares \nwhyperreference robust and registers the \pdfstringdef rules
+% below itself, so the workaround is applied only when the loaded noweb.sty is
+% a stock one.  Detection: \DeclareRobustCommand stores the real macro under
+% the name with a trailing space, which stock noweb.sty never defines.
+%
+% Never override unconditionally: the fork's version also ends its \hyperlink
+% in \relax so that beamerarticle cannot take a following <...> in a code
+% chunk (e.g. "close<enter>" in a muttrc) as an overlay specification, which
+% would drop both the identifier and the <...> (dbosk/noweb#11).  The fallback
+% below carries the same \relax.
+\ifcsname nwhyperreference \endcsname\else
+  % (1) Robust \nwhyperreference: written literally into moving arguments
+  %     instead of expanding (and misfiring its \global\let) there, yet still
+  %     links in the body.
+  \DeclareRobustCommand\nwhyperreference[2]{\hyperlink{noweb.#1}{#2}\relax}
+  % (2) Strip noweb's code-quote macros from PDF bookmark strings, so a
+  %     [[code]] quote in a heading yields clean bookmark text.
+  \pdfstringdefDisableCommands{%
+    \def\nwlinkedidentq#1#2{#1}%
+    \def\nwlinkedidentc#1#2{#1}%
+    \let\Tt\relax
+    \let\nwendquote\relax
+  }
+\fi

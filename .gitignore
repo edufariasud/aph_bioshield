@@ -1,0 +1,10 @@
+*.tmp
+*.log
+__pycache__/
+.DS_Store
+.memoria/
+**/.memoria/
+perfil_operador.json
+*p_*.json
+
+

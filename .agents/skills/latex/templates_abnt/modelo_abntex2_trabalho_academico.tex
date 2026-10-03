@@ -1,0 +1,151 @@
+%% =========================================================================
+%% MODELO CANÔNICO ABNTEX2 PARA TRABALHOS ACADÊMICOS & RELATÓRIOS TÉCNICOS
+%% Ecossistema Aluno Nota 90 — Ciência da Computação / Engenharia de Software
+%% =========================================================================
+\documentclass[
+    12pt,               % Tamanho da fonte padrão ABNT
+    openright,          % Capítulos começam em página ímpar
+    oneside,            % Para impressão em apenas um lado da folha (ou twoside)
+    a4paper,            % Tamanho do papel A4
+    english,            % Idioma adicional para abstract
+    brazil              % Idioma principal do documento
+]{abntex2}
+
+% --- Pacotes Fundamentais ---
+\usepackage[utf8]{inputenc}        % Codificação do documento (letras acentuadas)
+\usepackage[T1]{fontenc}           % Seleção de códigos de fonte
+\usepackage{lmodern}              % Usa a fonte Latin Modern
+\usepackage{color}                % Controle das cores
+\usepackage{graphicx}             % Inclusão de gráficos e figuras
+\usepackage{microtype}            % Melhorias na justificação do texto
+\usepackage{amsmath,amssymb}      % Fórmulas matemáticas avançadas
+\usepackage{booktabs}             % Tabelas de alta qualidade acadêmica
+\usepackage{listings}             % Inclusão de código-fonte
+\usepackage{xcolor}               % Suporte avançado a cores
+
+% --- Pacotes de Citações ABNT (Autor-Data) ---
+\usepackage[brazilian,hyperpageref]{backref}  % Páginas com as citações na bibliografia
+\usepackage[alf,abnt-emphasize=bf,abnt-repeated-title-omission=yes]{abntex2cite} % Citações padrão ABNT
+
+% --- Configurações do Pacote Listings (Código-Fonte com suporte a UTF-8) ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.96,0.96,0.96}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% --- Informações do Documento ---
+\titulo{Título do Trabalho Acadêmico: Subtítulo Explicativo}
+\autor{Eduardo Faria}
+\local{Brasil}
+\data{2026}
+\orientador{Prof. Dr. Nome do Orientador}
+\instituicao{%
+  Universidade de Computação e Tecnologia
+  \par
+  Curso de Engenharia de Software / Ciência da Computação}
+\tipotrabalho{Trabalho Acadêmico / Relatório Técnico}
+\preambulo{Trabalho apresentado como requisito parcial para obtenção de nota na disciplina X.}
+
+% --- Configurações de hiperlinks ---
+\definecolor{blue_abnt}{RGB}{41,5,195}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue_abnt,
+    citecolor=blue_abnt,
+    urlcolor=blue_abnt
+}
+
+% =========================================================================
+% INÍCIO DO DOCUMENTO
+% =========================================================================
+\begin{document}
+\selectlanguage{brazil}
+\frenchspacing 
+
+% --- Elementos Pré-Textuais ---
+\imprimircapa
+\imprimirfolhaderosto
+
+% Resumo em Português
+\setlength{\absparsep}{18pt}
+\begin{resumo}
+ Este documento apresenta o modelo estrutural canônico em conformidade com as normas da ABNT utilizando o pacote \textit{abntex2}. O objetivo deste trabalho é fornecer uma base sólida, reprodutível e livre de erros para a elaboração de artigos, relatórios técnicos e monografias nas disciplinas de computação e engenharia.
+ 
+ \textbf{Palavras-chave}: Engenharia de Software. LaTeX. ABNT. Computação.
+\end{resumo}
+
+% Sumário
+\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents*
+\cleardoublepage
+
+% --- Elementos Textuais ---
+\textual
+
+\chapter{Introdução}
+A introdução contextualiza o problema investigado, a motivação do estudo, a relevância técnica para a área de computação e os objetivos gerais e específicos da pesquisa.
+
+Segundo \citeonline{knuth1984literate}, a programação e a documentação técnica devem andar de mãos dadas, promovendo clareza cognitiva e rigor estrutural.
+
+\chapter{Fundamentação Teórica \& Metodologia}
+Aqui são detalhados os conceitos teóricos, padrões arquiteturais e algoritmos envolvidos.
+
+\section{Modelagem Matemática}
+Equações complexas mantêm formatação impecável:
+\begin{equation}
+    f(x) = \sum_{i=1}^{n} \frac{\alpha_i \cdot \beta_i}{\sqrt{1 + \gamma^2}} + \int_{0}^{\infty} e^{-\lambda t} dt
+\end{equation}
+
+\section{Exemplo de Código-Fonte}
+Exemplo de algoritmo implementado com realce de sintaxe:
+
+\begin{lstlisting}[language=Python, caption={Exemplo de algoritmo de busca em Python.}]
+def busca_binaria(vetor, elemento):
+    """Executa busca binaria em O(log n)."""
+    inicio = 0
+    fim = len(vetor) - 1
+    
+    while inicio <= fim:
+        meio = (inicio + fim) // 2
+        if vetor[meio] == elemento:
+            return meio
+        elif vetor[meio] < elemento:
+            inicio = meio + 1
+        else:
+            fim = meio - 1
+    return -1
+\end{lstlisting}
+
+\chapter{Resultados e Discussão}
+Apresentação dos dados empíricos, testes de benchmark, métricas de complexidade ciclomática e tempo de execução.
+
+\chapter{Conclusão}
+Síntese das contribuições alcançadas e proposição de trabalhos futuros.
+
+% --- Elementos Pós-Textuais ---
+\postextual
+
+% Bibliografia
+\bibliography{referencias}
+
+\end{document}

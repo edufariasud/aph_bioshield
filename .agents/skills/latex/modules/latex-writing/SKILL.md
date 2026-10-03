@@ -1,0 +1,742 @@
+---
+name: latex-writing
+description: |
+  Guide LaTeX document authoring following best practices and proper semantic markup.
+  Use proactively when: (1) writing or editing .tex files, (2) writing or editing .nw literate programming files,
+  (3) literate-programming skill is active and working with .nw files, (4) user mentions LaTeX, BibTeX, Mentipy
+  in a Beamer/article/PythonTeX context, interactive slide questions in LaTeX, or document formatting,
+  (5) reviewing LaTeX code quality. Ensures proper use of semantic environments (description vs itemize), csquotes (\enquote{} not 
+  ``...''), and cleveref (\cref{} not \S\ref{}).
+---
+
+# LaTeX Writing Best Practices
+
+This skill guides the creation of well-structured, semantically correct LaTeX documents following established best practices.
+
+## Core Principle: Semantic Markup
+
+Use LaTeX environments that match the semantic meaning of the content, not just the visual appearance.
+
+## List Environments: When to Use What
+
+### Use `description` for Term-Definition Pairs
+
+When you have labels followed by explanations, definitions, or descriptions, use the `description` environment:
+
+```latex
+\begin{description}
+\item[Term] Definition or explanation of the term
+\item[Label] Content associated with the label
+\item[Property] Description of the property
+\end{description}
+```
+
+**NEVER do this:**
+```latex
+\begin{itemize}
+\item \textbf{Term:} Definition or explanation
+\item \textbf{Label:} Content associated with label
+\end{itemize}
+```
+
+### Common Use Cases for `description`
+
+- **API parameters**: `\item[username] The user's login name`
+- **Configuration options**: `\item[timeout] Maximum wait time in seconds`
+- **Glossary entries**: `\item[LaTeX] A document preparation system`
+- **Passes/Fails examples**: `\item[Passes] Correct implementation...`
+- **Feature descriptions**: `\item[Auto-save] Automatically saves every 5 minutes`
+
+### Exception: Pedagogical Meta-Commentary
+
+Do not use a visible `description` list for instructor-facing pedagogical
+annotations such as \enquote{What varies}, \enquote{What stays invariant},
+or sequencing rationale in educational materials.  Those belong in
+`\ltnote{...}` via the `didactic-notes` skill.  Use `description` only
+when the labeled content is part of the student-facing document itself.
+
+### Use `itemize` for Simple Lists
+
+Use `itemize` when items are uniform list elements without labels:
+
+```latex
+\begin{itemize}
+\item First uniform item
+\item Second uniform item
+\item Third uniform item
+\end{itemize}
+```
+
+### Use `enumerate` for Numbered Steps or Rankings
+
+Use `enumerate` when order matters:
+
+```latex
+\begin{enumerate}
+\item First step in the process
+\item Second step in the process
+\item Third step in the process
+\end{enumerate}
+```
+
+### A single-item list is prose, not a list
+
+A list with exactly one `\item` is never correct: it renders as an orphan
+bullet with no siblings to enumerate. Write the content as a prose
+sentence. This is rampant inside semantic environments (`exercise`,
+`definition`, `remark`, `example`, `block`) where a single question or
+one-line statement gets needlessly wrapped in `itemize`.
+
+```latex
+% BAD — one bullet, nothing to list
+\begin{exercise}
+  \begin{itemize}
+    \item Describe your algorithm for sorting laundry.
+  \end{itemize}
+\end{exercise}
+
+% GOOD — prose
+\begin{exercise}
+  Describe your algorithm for sorting laundry.
+\end{exercise}
+```
+
+Two short sentences dressed as two bullets are usually also better as
+prose. Reach for `itemize`/`enumerate` only when there are genuinely
+multiple, parallel, enumerable items. In dual beamer/article decks this
+matters doubly: a lone bullet is ugly on the slide and breaks the prose
+flow of the notes (see the didactic-notes skill).
+
+### Never *start* an environment with a list or code block — lead with prose
+
+Even a genuine multi-item list must not be the *first* thing inside a
+semantic environment (`example`, `exercise`, `remark`, `definition`,
+`block`). Opening straight into `\begin{enumerate}`, `\begin{itemize}`, or
+`\inputminted`/`\begin{minted}` collides with the environment's inline
+label: the first list item (or the first code line) is set on the same line
+as \enquote{Example 1.}, and they overprint. Always precede the list or
+code with at least a short lead-in sentence.
+
+```latex
+% BAD — enumerate/minted butts against the "Exempel 1." label
+\begin{example}[Att göra pannkakssmet]
+  \begin{enumerate}
+    \item Knäck tre ägg i en bunke.
+    ...
+  \end{enumerate}
+\end{example}
+
+\begin{example}[Hela programmet]
+  \inputminted{python}{examples/pannkakor.py}
+\end{example}
+
+% GOOD — a lead-in sentence puts the list/code on its own line
+\begin{example}[Att göra pannkakssmet]
+  Följ stegen:
+  \begin{enumerate}
+    \item Knäck tre ägg i en bunke.
+    ...
+  \end{enumerate}
+\end{example}
+
+\begin{example}[Hela programmet]
+  Det ser ut så här:
+  \inputminted{python}{examples/pannkakor.py}
+\end{example}
+```
+
+So the rule is not \enquote{no bullets} — bullets and code are fine once a
+prose sentence leads into them. The prohibition is on a list or code block
+being the environment's opening token.
+
+### Interleave Commentary Between Numbered Items (enumitem `resume`)
+
+When enumerated items (survey/quiz questions, requirements, exam tasks) each
+need explanatory commentary, keep the `\item` text bare and put the
+commentary as prose *between* single-item environments, resuming the
+numbering with enumitem:
+
+```latex
+\begin{enumerate}
+  \item \enquote{Have you programmed before this course?}
+\end{enumerate}
+Commentary motivating the question, referencing what it serves.
+\begin{enumerate}[resume]
+  \item \enquote{How do you plan to study in this course?}
+\end{enumerate}
+More commentary...
+```
+
+- Items sharing the same commentary share one environment.
+- Requires `\usepackage{enumitem}`; in dual beamer/article builds load it in
+  the **article driver only** (enumitem conflicts with beamer's list
+  internals) and keep such lists in article-mode prose, which `\mode*`
+  skips in the slides job.
+- Anti-pattern: appending the commentary inside the `\item` after the
+  question text — the question and its rationale then blur together.
+
+## Recognition Patterns
+
+When reviewing or writing LaTeX, look for these patterns that indicate `description` should be used:
+
+- `\item \textbf{SomeLabel:}` → Should use `\item[SomeLabel]`
+- `\item \emph{SomeLabel:}` → Should use `\item[SomeLabel]`
+- `\item SomeLabel ---` → Should use `\item[SomeLabel]`
+- Lists where every item starts with bold/emphasized text
+
+## Fixing Common Anti-Patterns
+
+### Anti-Pattern: Bold Labels in Itemize
+```latex
+% INCORRECT
+\begin{itemize}
+\item \textbf{Passes:} \verb|\documentclass{article}|
+\item \textbf{Fails:} No documentclass declaration
+\end{itemize}
+```
+
+### Correct: Description Environment
+```latex
+% CORRECT
+\begin{description}
+\item[Passes] \verb|\documentclass{article}|
+\item[Fails] No documentclass declaration
+\end{description}
+```
+
+### Anti-Pattern: Manual Formatting Instead of Semantic Structure
+```latex
+% INCORRECT
+\noindent\textbf{Configuration:} Set timeout to 30 seconds.\\
+\textbf{Performance:} Optimized for large datasets.
+```
+
+### Correct: Semantic Description
+```latex
+% CORRECT
+\begin{description}
+\item[Configuration] Set timeout to 30 seconds
+\item[Performance] Optimized for large datasets
+\end{description}
+```
+
+## Literate Programming (.nw files)
+
+**CRITICAL**: When writing LaTeX in literate programming files (.nw), use noweb's `[[code]]` notation for quoting code, not `\texttt` with manual escaping.
+
+### Use `[[code]]` Notation, Not `\texttt{...\_...}`
+
+The noweb literate programming system provides special notation for code references that automatically handles special characters like underscores.
+
+**Anti-pattern**: Manual underscore escaping with `\texttt`
+```latex
+% INCORRECT - in .nw files
+The \texttt{get\_submission()} method calls \texttt{\_\_getattribute\_\_}.
+We store \texttt{\_original\_get\_submission} in the closure.
+The \texttt{NOREFRESH\_GRADES} constant defines final grades.
+```
+
+**Correct**: Use `[[code]]` notation
+```latex
+% CORRECT - in .nw files
+The [[get_submission()]] method calls [[__getattribute__]].
+We store [[_original_get_submission]] in the closure.
+The [[NOREFRESH_GRADES]] constant defines final grades.
+```
+
+**Why this matters**:
+- Automatically escapes special characters (underscores, backslashes, etc.)
+- Makes source code more readable (no manual escaping)
+- Follows literate programming conventions
+- Prevents LaTeX errors from forgotten escapes
+- Clearly distinguishes code from prose
+
+### When to Use `[[code]]` vs `\texttt`
+
+**Use `[[code]]`** in .nw files for:
+- Function and method names: `[[get_submissions()]]`, `[[__init__]]`
+- Variable names: `[[_includes]]`, `[[user_id]]`
+- Class names: `[[LazySubmission]]`, `[[Assignment]]`
+- Constants: `[[NOREFRESH_GRADES]]`, `[[MAX_RETRIES]]`
+- Module names: `[[pickle]]`, `[[Canvas]]`
+- Any identifier with underscores or special characters
+
+**Use `\texttt`** in .nw files for:
+- Short non-code technical terms without special characters
+- File extensions: `\texttt{.py}`, `\texttt{.nw}`
+- Simple commands without underscores
+
+**In regular .tex files** (not literate programs):
+- Use `\texttt` with proper escaping as `[[...]]` is not available
+- Or use packages like `minted` or `listings` for code
+
+### Recognition Pattern for Review
+
+When reviewing .nw files, look for these anti-patterns:
+- `\texttt{..._...}` → Should use `[[...]]`
+- `\texttt{...__...}` → Should use `[[...]]`
+- `\item[SOME\_CONSTANT behavior]` → Either rephrase the label and put
+  `[[SOME_CONSTANT]]` in the body, or wrap the constant in `[[...]]`
+  inside the label — `\item[ [[SOME_CONSTANT]] behavior]`.  If you take
+  the second option, separate the `]]` from the closing `]` with at
+  least one character (usually a space) so you do not produce three
+  brackets in a row, which triggers a runaway-argument error.
+
+### Examples from Real Code
+
+**Documenting methods:**
+```latex
+% INCORRECT
+The \texttt{\_\_getstate\_\_} method excludes \texttt{\_original\_get\_submission}.
+
+% CORRECT
+The [[__getstate__]] method excludes [[_original_get_submission]].
+```
+
+**Documenting constants:**
+```latex
+% INCORRECT
+\item[NOREFRESH\_GRADES behavior] Submissions with final grades...
+
+% CORRECT
+\item[Final grade policy] Submissions with final grades (A, P, P+, complete)
+  are never refreshed, maintaining the [[NOREFRESH_GRADES]] policy.
+```
+
+**Documenting attributes:**
+```latex
+% INCORRECT
+The decorator adds a \texttt{\_\_cache} dictionary and \texttt{\_\_all\_fetched} flag.
+
+% CORRECT
+The decorator adds a [[__cache]] dictionary and [[__all_fetched]] flag.
+```
+
+## Additional Best Practices
+
+### Cross-References
+- **Always** use `\cref{...}` (cleveref package) for all cross-references
+- **Never** use `\S\ref{...}` or manually type section/figure prefixes
+- Use descriptive labels: `\label{sec:introduction}` not `\label{s1}`
+- Examples:
+  - Sections: `\cref{sec:background}` → "Section 2.1"
+  - Figures: `\cref{fig:diagram}` → "Figure 3"
+  - Tables: `\cref{tab:results}` → "Table 1"
+  - Multiple: `\cref{sec:intro,sec:conclusion}` → "Sections 1 and 4"
+
+**Anti-pattern**: Manual prefixes
+```latex
+% INCORRECT
+Section~\ref{sec:intro} shows...
+\S\ref{sec:background} discusses...
+Figure~\ref{fig:plot} demonstrates...
+
+% CORRECT
+\cref{sec:intro} shows...
+\cref{sec:background} discusses...
+\cref{fig:plot} demonstrates...
+```
+
+**Why**: The cleveref package automatically adds the correct prefix (Section, Figure, etc.) and handles pluralization, ranges, and language-specific formatting.
+
+**Reference-type names**: the names `\cref` prints must match the words the
+prose itself uses, in any language — a document that says "steps" must not
+render "item 5" (override with `\crefname`, in an `\AtBeginDocument` hook
+registered after cleveref so a language option's own hook doesn't silently
+overwrite it). In non-English documents, cleveref additionally takes its
+language from its own package options or the global class options, **not**
+from babel. Several kinds in one document are handled per label
+(`\label[type]{...}`) or per environment (enumitem `\newlist`, one counter
+per list — not in beamer). Full guidance in
+`references/cleveref-type-names.md` (search: `crefname`, `terminology`,
+`AtBeginDocument`, `label[type]`, `newlist`, `swedish`, `enumi`, `appendix`).
+
+### Citations
+- Use proper citation commands (`\cite`, `\citep`, `\citet`) not manual references
+- Never write `[1]` or `(Smith 2020)` manually
+
+### Quotations (csquotes package)
+- **Always** use `\enquote{...}` for quotes, never manual quote marks
+- Handles nested quotes automatically: `\enquote{outer \enquote{inner} quote}`
+- Language-aware: Swedish uses »...« or "...", English uses "..." or '...'
+- For block quotes, use `\begin{displayquote}...\end{displayquote}`
+
+**Anti-pattern**: Manual quotes
+```latex
+% INCORRECT
+"This is a quote"
+``This is a quote''
+'single quotes'
+```
+
+**Correct**: Use csquotes
+```latex
+% CORRECT
+\enquote{This is a quote}
+\enquote{outer \enquote{inner} quote}
+```
+
+**Why**: Manual quote marks don't adapt to language settings and can cause typographical inconsistencies. The csquotes package handles all quote styling correctly based on document language.
+
+#### Cited quotation vs. attributed paraphrase
+
+The command depends on whether the text is **verbatim** from the source:
+
+- **Verbatim text reproduced from a source** → use the *integrated* cited-quotation
+  commands so the quotation carries its own reference; do **not** write
+  `\enquote{...}` plus a detached `\cite`/`\autocite`:
+  - `\textcquote[⟨prenote⟩][⟨postnote⟩]{key}{text}` — inline
+  - `\blockcquote[⟨postnote⟩]{key}{text}` — block (long quotes)
+- **Paraphrase, reconstructed dialogue, or a recounted example** → it is *not* a
+  quotation. Attribute it integrally with `\textcite`/`\autocite`, and keep any
+  reported words in plain `\enquote`.
+- **Plain `\enquote{...}`** otherwise: scare quotes, words-as-mention, and
+  back-references to an already-cited quotation.
+
+```latex
+% INCORRECT — verbatim source text as \enquote + detached citation
+The study reports \enquote{much higher (63\%)} results \autocite[p.~167]{NCOL}.
+% CORRECT — verbatim quotation carries its own citation
+The study reports \textcquote[p.~167]{NCOL}{much higher (63\%)} results.
+
+% CORRECT — a paraphrased/recounted example is attributed, NOT \textcquote'd
+\Textcite[pp.~24--25]{NCOL} reports a study in which a child answers
+\enquote{five} for one hand and \enquote{ten} for the other.
+```
+
+**Crucial caveat**: `\textcquote`/`\blockcquote` assert the braced text is
+*verbatim* from the source. Verify the words actually appear there before
+wrapping them; do not use these commands for paraphrase, reconstructed dialogue,
+or words-as-mention — attribute those with `\textcite`/`\autocite` instead. (See
+the **backing-claims** skill — read the source and verify before you cite.)
+
+### Emphasis
+- **Never** use ALL CAPITALS for emphasis in running text
+- Use `\emph{...}` to emphasize words or phrases
+- For strong emphasis, use `\textbf{...}` or nested `\emph{\emph{...}}`
+- Let LaTeX handle the typographic styling
+
+**Anti-pattern**: ALL CAPITALS for emphasis
+```latex
+% INCORRECT
+This is VERY important to understand.
+We must do this NOW before moving forward.
+The BENEFITS of classes are clear.
+```
+
+**Correct**: Semantic emphasis
+```latex
+% CORRECT
+This is \emph{very} important to understand.
+We must do this \emph{now} before moving forward.
+The \emph{benefits} of classes are clear.
+```
+
+**Why**: ALL CAPITALS in running text is considered shouting and poor typography. It's harder to read and looks unprofessional. Use `\emph{...}` to provide semantic emphasis, and LaTeX will render it appropriately (typically as italics, but this can be configured based on context and document style).
+
+**Exception**: Acronyms and proper names that are conventionally written in capitals (e.g., NASA, USA, PDF) are fine and should not be emphasized.
+
+### Floats: Figures and Tables
+
+**Core principle**: An image is not a figure, but a figure can contain an image. Use proper figure and table environments with captions and labels.
+
+#### Using sidecaption (memoir class)
+
+When using the memoir document class, prefer `sidecaption` over traditional `\caption` for better layout and accessibility:
+
+**For figures:**
+```latex
+\begin{figure}
+  \begin{sidecaption}{Clear description of image content}[fig:label]
+    \includegraphics[width=0.7\textwidth]{path/to/image}
+  \end{sidecaption}
+\end{figure}
+```
+
+**For tables:**
+```latex
+\begin{table}
+  \begin{sidecaption}{Description of table content}[tab:label]
+    \begin{tabular}{lcc}
+      \toprule
+      Header1 & Header2 & Header3 \\
+      \midrule
+      Data1 & Data2 & Data3 \\
+      \bottomrule
+    \end{tabular}
+  \end{sidecaption}
+\end{table}
+```
+
+**Key features of sidecaption:**
+- **Caption placement**: Caption appears alongside the content (figure/table), not above or below
+- **Space efficiency**: Better use of page width, especially for narrow images/tables
+- **Improved readability**: Caption and content are visually connected
+- **Accessibility**: Clear semantic separation between caption text and content
+- **Consistent labeling**: Label goes in optional second argument `[fig:label]`
+
+**When to use sidecaption:**
+- Medium-sized figures/tables that don't need full text width
+- Educational materials where caption-content proximity aids understanding
+- Documents using memoir class (Beamer presentations with memoir features)
+
+**Traditional caption alternative:**
+```latex
+\begin{figure}
+  \centering
+  \includegraphics[width=0.7\textwidth]{path/to/image}
+  \caption{Description of image content}
+  \label{fig:label}
+\end{figure}
+```
+
+Use traditional `\caption` + `\label` when:
+- Not using memoir class
+- Figure/table spans full text width
+- Caption naturally belongs below content (e.g., wide tables)
+
+#### Referencing figures and tables
+
+Always use `\cref{fig:label}` (cleveref package) to reference figures and tables:
+
+```latex
+As shown in \cref{fig:memory-hierarchy}, secondary memory is slower but non-volatile.
+
+The results in \cref{tab:benchmark} demonstrate...
+```
+
+**Never** hard-code references like "Figure 1", "Table 3.2", or use manual prefixes like `Figure~\ref{fig:label}`—let cleveref handle both numbering and prefixes automatically.
+
+### Verbatim and Code
+- Use `minted` (preferred, syntax-highlighted; needs `-shell-escape`) or
+  `listings` for code blocks
+- Use `\verb` or `\mintinline` for inline code snippets
+- Never paste code as normal text
+- **minted v3 (TeX Live 2024+) gotchas** — see
+  `references/minted-v3-and-floats.md` (search: `outputdir`, `Pygments lexer`):
+  the `[outputdir=...]` package option is removed (now an error; load plain
+  `\usepackage{minted}`), and a `minted`/`\mintinline` **language argument split
+  across a line break** fails with `Pygments lexer " python" is unknown`. Keep
+  each minted invocation's arguments on one line; wrap prose between
+  `\mintinline{...}{...}` calls, never inside one.
+
+### Debugging `! LaTeX Error: Float(s) lost.`
+This fatal, location-less error (reported at `\end{document}`) in a dual
+beamer/article didactic+memoir build is typically a citation/footnote inside a
+**slide-only `\begin{frame}<presentation>` frame** (it suppresses output but
+still executes the body, so the margin footnote gets orphaned) — *not* citations
+in ordinary frames, which are fine. Run a bare `pdflatex -halt-on-error` pass to
+see the real error past latexmk/biber noise, and diagnose by minimal
+reproduction. Fix: wrap the slide-only frame in `\mode<presentation>{...}` (or
+filter the citation with `\only<presentation>{...}`). **Caveat:** the
+`\mode<presentation>{...}` wrap cannot be used on a `[fragile]` frame — the
+group's closing `}` falls outside the verbatim `.vrb` scan and the *slides*
+build then fails with `! Extra }, or forgotten \endgroup`. For a fragile
+slide-only frame, drop `[fragile]` if it is not actually needed (no
+verbatim/minted/listings inside), otherwise keep
+`\begin{frame}<presentation>[fragile]` and guard each citation with
+`\only<presentation>{\autocite{...}}`. Full diagnosis:
+`references/minted-v3-and-floats.md` and the **didactic-notes** skill's
+`references/footnotes-and-citations.md`.
+
+### Dual beamer/article builds (one source, two outputs)
+
+For papers compiled twice from the same content files (memoir +
+`beamerarticle` article AND a beamer slide deck, content files starting with
+`\mode*`), follow `references/dual-beamer-article.md` (search: `pyblock
+frame`, `ProvideSemanticEnv`, `restatable`, `biber root`). The four rules,
+in brief:
+
+- **Every PythonTeX `pyblock` goes inside a `\begin{frame}[fragile]`** that
+  renders in both modes — out-of-frame pyblocks are skipped by the slides
+  job, desynchronising the shared PythonTeX session data (symptoms: swapped
+  outputs, `?? PythonTeX ??`).
+- **Research questions and hypotheses** go in semantic, cleveref-labelled
+  environments (didactic's `question`; declare e.g. `hypothesis` via
+  `\ProvideSemanticEnv` after `\DeclareTranslation`), stated inside
+  `\begin{restatable}{question}{tag}` (thm-restate) and restated with
+  `\tag*` — with a beamer shim in the shared preamble; reference via
+  `\cref{rq:*}`, never literal "RQ1"/"H2".
+- **Slide-only frames**: `\mode<presentation>{...}` wrap (fragile caveat
+  above); article-only prose sits outside frames; don't let slide bullet
+  lists duplicate adjacent article prose.
+- **Attribution travels with the quote, inside the frame.** A verbatim
+  quote shown on a slide must carry its source there (footnote/`\footcite`
+  on the quote itself): if the attribution sits in the article-only prose
+  after the frame, the slides show the quote unattributed. Attached to the
+  quote it renders at the slide's foot in beamer and as a margin/footnote
+  in the article — both jobs covered by one source.
+- **Biber reruns** happen from the project root (`biber ltxobj/<jobname>`),
+  never from inside the output directory.
+
+### Encoding and Fonts (engine-dependent)
+
+Unicode/font build failures have **opposite fixes on pdfLaTeX vs
+XeLaTeX/LuaLaTeX**, so identify the engine first (`grep 'This is' file.log`).
+Full guidance in `references/unicode-and-fonts.md` (search:
+`DeclareUnicodeCharacter`, `iftex`, `newunicodechar`, `fontenc`, `pdffonts`):
+
+- **pdfLaTeX — `! LaTeX Error: Unicode character … (U+XXXX) not set up`** — a
+  non-ASCII byte with no mapping (reversed quotes, dash variants, `≈`,
+  box-drawing).  Fix in the **preamble** with `\usepackage[utf8]{inputenc}`
+  *then* `\DeclareUnicodeCharacter{XXXX}{...}`, not by editing the source.
+  (`inputenc` is what defines `\DeclareUnicodeCharacter` portably; without it
+  you may get `Undefined control sequence`.)
+- **XeLaTeX/LuaLaTeX** — the "not set up" error does not occur (native UTF-8),
+  and `\DeclareUnicodeCharacter` is **undefined** there (`inputenc` is
+  ignored).  Guard pdfLaTeX-only mappings with `\ifpdftex … \fi` (iftex
+  package); remap a glyph with `\newunicodechar` instead.
+- **pdfLaTeX — code renders as proportional serif** (underscores extract as
+  `˙`, quotes turn curly) — a T1-only monospace font (e.g. Bera Mono) cannot
+  select without `\usepackage[T1]{fontenc}`.  Load it (inside the `\ifpdftex`
+  branch).
+- **Build systems switch engines.** `latexmk -pdf` vs `-xelatex`, and Makefile
+  rules may be tangled from a `.nw`, so a `make`/submodule update can flip the
+  engine — re-check the `.log` banner, don't assume.
+- **Diagnose, do not guess:** `pdffonts -f N -l N file.pdf` shows which fonts a
+  page embeds; `pdftotext -f N -l N` reveals the encoding via glyph→Unicode
+  mapping.
+
+### Paths
+- Always use forward slashes in paths: `figures/diagram.pdf` not `figures\diagram.pdf`
+- Use platform-independent path specifications
+
+## Workflow for Writing LaTeX
+
+When writing or editing LaTeX content:
+
+1. **Check file type**: Are you in a .nw literate programming file? If yes, use `[[code]]` notation, not `\texttt{...\_...}`
+2. **Identify content structure**: Is this a list of uniform items or term-definition pairs?
+3. **Choose semantic environment**: Match the environment to the content meaning
+4. **Use proper commands**: Leverage LaTeX's semantic commands rather than manual formatting
+5. **Verify cross-references**: Ensure labels and references are descriptive and correct
+6. **Check for anti-patterns**: Review for `\textbf{Label:}` in itemize, `\texttt{..._...}` in .nw files
+
+## When Reviewing LaTeX Code
+
+Check for these common issues:
+- [ ] Lists using `\textbf{Label:}` instead of `description` environment
+- [ ] Hard-coded numbers instead of `\ref`
+- [ ] Manual cross-reference prefixes (`\S\ref`, `Section~\ref`, `Figure~\ref`) instead of `\cref`
+- [ ] Manual citation formatting instead of `\cite` commands
+- [ ] Manual quotes (`"..."`, `'...'`, `` `...` ``) instead of `\enquote{...}`
+- [ ] *Verbatim* source text written as `\enquote{...}` + a detached `\cite`/`\autocite` instead of `\textcquote`/`\blockcquote` (and, conversely, `\textcquote`/`\blockcquote` wrapping paraphrase that is not verbatim)
+- [ ] Images without `figure` environment
+- [ ] Code without proper formatting (listings/verbatim)
+- [ ] Windows-style backslashes in paths
+- [ ] Engine-specific Unicode/font setup not guarded by `iftex` — e.g.
+      `\DeclareUnicodeCharacter` (pdfLaTeX-only) used unconditionally, which
+      errors under XeLaTeX/LuaLaTeX (see `references/unicode-and-fonts.md`)
+- [ ] pdfLaTeX: non-ASCII characters without a `\DeclareUnicodeCharacter`
+      mapping, or `\DeclareUnicodeCharacter` used without `\usepackage[utf8]{inputenc}`
+- [ ] pdfLaTeX: monospace/code rendering as proportional serif — missing
+      `\usepackage[T1]{fontenc}` for a T1-only font such as Bera Mono
+- [ ] Dual beamer/article build: `pyblock` outside a both-modes
+      `\begin{frame}[fragile]` (desynchronises PythonTeX sessions), or
+      literal "RQ1"/"H2" in prose instead of `\cref` to a semantic
+      question/hypothesis environment (see
+      `references/dual-beamer-article.md`)
+
+**Additional checks for .nw literate programming files:**
+- [ ] `\texttt{..._...}` or `\texttt{...__...}` → Should use `[[...]]` notation
+- [ ] Description labels with underscores `\item[FOO\_BAR behavior]` → Use better label + `[[FOO_BAR]]` in text
+- [ ] Any manually escaped underscores in code references → Use `[[...]]` instead
+
+## Beamer: Presentation vs Article Mode
+
+When creating Beamer presentations that also generate article versions, use `\mode<presentation>` and `\mode<article>` to provide appropriate content for each format.
+
+### When to Split Content
+
+**Verbose text environments**: Semantic environments (definition, remark, example, block) with more than 2-3 lines of prose are too verbose for slides.
+
+**Solution**: Provide concise versions for presentations and full explanations for articles:
+
+```latex
+\begin{frame}
+  \mode<presentation>{%
+    \begin{remark}[Key Point]
+      \begin{itemize}
+        \item Concise point 1
+        \item Concise point 2
+        \item Concise point 3
+      \end{itemize}
+    \end{remark}
+  }
+  \mode<article>{%
+    \begin{remark}[Key Point]
+      Full explanatory paragraph with detailed reasoning and context
+      that would overwhelm a slide but provides value in written form.
+
+      Additional paragraphs can elaborate on nuances and implications.
+    \end{remark}
+  }
+\end{frame}
+```
+
+### Visual Elements
+
+**Side-by-side layouts** using `\textbytext`:
+- Presentation: `\textbytext` (non-starred, column width, works in beamer frames)
+- Article: `\textbytext*` (starred, fullwidth, better for printed documents)
+
+```latex
+\begin{frame}
+  \mode<presentation>{%
+    \textbytext{Left content}{Right content}
+  }
+  \mode<article>{%
+    \textbytext*{Left content}{Right content}
+  }
+\end{frame}
+```
+
+### Principle
+
+Slides need **visual clarity** and **conciseness** (bullets, short phrases). Articles can provide **depth** and **explanation** (full sentences, paragraphs). Design content appropriate for each medium.
+
+### Interactive Questions with Mentipy
+
+For slide decks or educational articles that should embed live polls, use
+`mentipy.latex` from a PythonTeX block or another Python block.  Prefer
+`mc`, `open_text`, `scale`, and `word_cloud` for student-facing questions,
+then run `mentipy serve` to publish the poll and recompile after URL changes
+so refreshed QR codes are embedded.  Use `layout="slide"` for Beamer slides
+and `layout="article"` or `layout="article+qr"` for handouts.
+
+## Standard Preamble
+
+For new LaTeX documents, use the standard preamble from `references/preamble.tex`. Copy it verbatim to your project's `doc/preamble.tex` and include it with `\input{preamble}` after `\documentclass`.
+
+**Document structure:**
+```latex
+\documentclass[a4paper,oneside]{memoir}
+\input{preamble}
+
+\title{Document Title}
+\author{Author Name}
+\date{\today}
+
+\begin{document}
+\frontmatter
+\maketitle
+\tableofcontents
+
+\mainmatter
+% Content here
+
+\backmatter
+\end{document}
+```
+
+**The standard preamble provides:**
+- Language support, bibliography, mathematics, and quotations
+- Code highlighting and noweb support
+- Cross-references and tables
+- Common utilities such as `enumitem`, `acro`, and `siunitx`
+
+This ensures consistent formatting across all documents and projects.
+
+## Remember
+
+LaTeX is a **document preparation system** based on **semantic markup**, not a word processor. The goal is to describe what content *is*, not how it should *look*. Let LaTeX handle the formatting based on the semantic structure you provide.

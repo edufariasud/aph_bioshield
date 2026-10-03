@@ -1,0 +1,341 @@
+%% =========================================================================
+%% MODELO CANÔNICO ABSOLUTO DE TCC & ARTIGO ACADÊMICO (ABNT / UNIVASSOURAS)
+%% Baseado no Modelo Oficial da Universidade de Vassouras — Campus Maricá
+%% Curso de Bacharelado em Direito (Adaptável para Demais Áreas do Conhecimento)
+%% =========================================================================
+%% Este arquivo é a referência ABSOLUTA da Skill 'latex' para Trabalhos de
+%% Conclusão de Curso (TCC), Monografias e Artigos Acadêmicos no padrão brasileiro
+%% quando o usuário não especificar um template específico.
+%% =========================================================================
+
+\documentclass[
+    12pt,               % Tamanho da fonte padrão (Arial 12pt / ABNT)
+    openright,          % Capítulos começam em página ímpar
+    oneside,            % Impressão em apenas um lado da folha (padrão TCC digital)
+    a4paper,            % Tamanho do papel A4 (210 x 297 mm)
+    english,            % Idioma secundário (Abstract)
+    brazil              % Idioma principal do documento
+]{abntex2}
+
+% --- Pacotes Tipográficos & Idioma ---
+\usepackage[utf8]{inputenc}        % Codificação de caracteres UTF-8
+\usepackage[T1]{fontenc}           % Seleção de codificação de fonte
+\usepackage{helvet}                % Família de fontes Helvetica (Clone do Arial)
+\renewcommand{\familydefault}{\sfdefault} % Define Arial/Sans-Serif como fonte padrão (exigência do modelo)
+\usepackage{microtype}            % Justificação tipográfica balanceada
+\usepackage{indentfirst}          % Indenta o primeiro parágrafo de cada seção
+\usepackage{color,xcolor}          % Controle avançado de cores
+\usepackage{graphicx}             % Inserção de ilustrações e fotos
+\usepackage{booktabs}             % Tabelas de alta qualidade visual
+\usepackage{amsmath,amssymb}      % Fórmulas e símbolos matemáticos
+\usepackage{setspace}             % Controle de espaçamento entrelinhas
+
+% --- Configurações das Margens Oficiais (ABNT NBR 14724) ---
+% Superior e Esquerda: 3,0 cm | Inferior e Direita: 2,0 cm
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    top=3.0cm,
+    bottom=2.0cm,
+    left=3.0cm,
+    right=2.0cm
+}
+
+% --- Citações e Referências ABNT (NBR 10520 & NBR 6023) ---
+\usepackage[brazilian,hyperpageref]{backref}
+\usepackage[alf,abnt-emphasize=bf,abnt-repeated-title-omission=yes,abnt-etal-list=3]{abntex2cite}
+
+% Configuração das chamadas de backref na bibliografia
+\renewcommand{\backrefpagesname}{Citado na(s) página(s):~}
+\renewcommand{\backref}{}
+\renewcommand*{\backrefalt}[4]{
+	\ifcase #1
+		Nenhuma citação no texto.%
+	\or
+		Citado na página #2.%
+	\else
+		Citado nas páginas #2.%
+	\fi}
+
+% --- Configuração de Hiperlinks ---
+\definecolor{blue_abnt}{RGB}{0,0,139} % Azul escuro formal para impressão e PDF
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue_abnt,
+    citecolor=blue_abnt,
+    urlcolor=blue_abnt,
+    bookmarksdepth=4
+}
+
+% --- Parâmetros de Indentação e Espaçamento ---
+\setlength{\parindent}{1.5cm}       % Recuo da primeira linha do parágrafo
+\setlength{\parskip}{0.0cm}         % Sem espaçamento extra entre parágrafos (regra clássica ABNT)
+\OnehalfSpacing                     % Espaçamento entrelinhas 1,5 no corpo do texto
+
+% --- Dados Institucionais e Autorais (Personalizáveis) ---
+\instituicao{%
+  UNIVERSIDADE DE VASSOURAS
+  \par
+  CAMPUS MARICÁ
+  \par
+  Curso de Bacharelado em DIREITO}
+
+\autor{NOME COMPLETO DO(A) AUTOR(A)}
+\titulo{TÍTULO DO TRABALHO DE CONCLUSÃO DE CURSO}
+\subtitulo{Subtítulo Explicativo (Opcional)}
+\local{MARICÁ -- RJ}
+\data{2026}
+
+\orientador{Prof. Dr. Eraldo José Brandão}
+\coorientador{} % Preencha se houver: Prof(a). Me./Dra. Nome
+
+\tipotrabalho{Trabalho de Conclusão de Curso (Graduação)}
+\preambulo{Trabalho de Conclusão de Curso apresentado ao Curso de Bacharelado em Direito da Universidade de Vassouras, Campus Maricá, como requisito parcial para obtenção do grau de Bacharel em Direito.}
+
+% =========================================================================
+% INÍCIO DO DOCUMENTO
+% =========================================================================
+\begin{document}
+\selectlanguage{brazil}
+\frenchspacing % Retira espaços extras após pontos
+
+% -------------------------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% -------------------------------------------------------------------------
+
+% --- CAPA OFICIAL ---
+\imprimircapa
+
+% --- FOLHA DE ROSTO ---
+\imprimirfolhaderosto
+
+% --- FOLHA DE APROVAÇÃO (BANCA EXAMINADORA) ---
+\begin{folhadeaprovacao}
+  \begin{center}
+    {\ABNTEXchapterfont\large\imprimirautor}
+    \vspace*{\fill}
+
+    {\ABNTEXchapterfont\bfseries\Large\imprimirtitulo}
+    \abntex@ifnotempty{\imprimirsubtitulo}{: \imprimirsubtitulo}
+    \vspace*{\fill}
+
+    \hspace{.45\textwidth}
+    \begin{minipage}{.5\textwidth}
+        \SingleSpacing
+        \imprimirpreambulo
+    \end{minipage}%
+    \vspace*{\fill}
+
+    Aprovado em \underline{\hspace{1cm}} de \underline{\hspace{3cm}} de \underline{\hspace{1.5cm}}.
+    
+    \vspace*{1.0cm}
+    \textbf{Banca Examinadora}
+
+    \assinatura{\textbf{\imprimirorientador} \\ Orientador -- Universidade de Vassouras}
+    \assinatura{\textbf{Prof(a). Titulação e Nome Completo} \\ Primeiro Membro Examinador -- Instituição}
+    \assinatura{\textbf{Prof(a). Titulação e Nome Completo} \\ Segundo Membro Examinador -- Instituição}
+    
+    \vspace*{\fill}
+    {\large\imprimirlocal}
+    \par
+    {\large\imprimirdata}
+  \end{center}
+\end{folhadeaprovacao}
+
+% --- DEDICATÓRIA (OPCIONAL) ---
+\begin{dedicatoria}
+   \vspace*{\fill}
+   \centering
+   \noindent
+   \textit{À minha família, pelo apoio incondicional e incentivo permanente,\\
+   fazendo com que as dificuldades fossem superadas a cada dia.} \vspace*{\fill}
+\end{dedicatoria}
+
+% --- AGRADECIMENTOS (OPCIONAL) ---
+\begin{agradecimentos}
+Agradeço a Deus pela vida e sabedoria concedidas.
+
+Aos meus pais e familiares, pelo amor, renúncia e incentivo constantes durante toda a minha trajetória acadêmica.
+
+Ao meu orientador, Prof. Dr. Eraldo José Brandão, pela generosidade intelectual, paciência e valiosas orientações que tornaram possível a concretização desta pesquisa.
+
+Aos professores do Curso de Direito da Universidade de Vassouras -- Campus Maricá, pelos ensinamentos transmitidos e dedicação à docência de excelência.
+\end{agradecimentos}
+
+% --- EPÍGRAFE (OPCIONAL — REGRA DE RECUO DE 8 CM, ESPAÇAMENTO SIMPLES, SEM ITÁLICO) ---
+\begin{epigrafe}
+    \vspace*{\fill}
+    \begin{flushright}
+        \begin{minipage}{0.5\textwidth}
+            \SingleSpacing
+            \noindent
+            A justiça é a constante e firme vontade de dar a cada um o que é seu por direito.\\
+            \vspace*{0.3cm}
+            (ULPIANO, Digesto 1.1.10)
+        \end{minipage}
+    \end{flushright}
+\end{epigrafe}
+
+% --- RESUMO EM PORTUGUÊS (OBRIGATÓRIO — ABNT NBR 6028:2003) ---
+\setlength{\absparsep}{18pt}
+\begin{resumo}
+ \SingleSpacing
+ O presente Trabalho de Conclusão de Curso analisa o problema delimitado no âmbito das relações jurídicas contemporâneas, tendo como objetivo geral investigar os desdobramentos dogmáticos e práticos da temática escolhida. A metodologia adotou abordagem qualitativa, de natureza descritiva e explicativa, operacionalizada por meio de pesquisa bibliográfica e documental em legislação pátria, doutrina especializada e jurisprudência consolidada dos Tribunais Superiores. Os resultados demonstram a imperiosa necessidade de adequação dos institutos jurídicos aos novos paradigmas sociais e tecnológicos, evidenciando as convergências e contradições do ordenamento em vigor. Conclui-se pela relevância de critérios hermenêuticos integradores para a preservação da segurança jurídica e da efetividade dos direitos fundamentais envolvidos.
+
+ \textbf{Palavras-chave}: Direito Constitucional. Relações Jurídicas. Hermenêutica. Segurança Jurídica. Efetividade.
+\end{resumo}
+
+% --- ABSTRACT EM INGLÊS (OBRIGATÓRIO) ---
+\begin{resumo}[Abstract]
+ \begin{otherlanguage*}{english}
+ \SingleSpacing
+ This final undergraduate thesis analyzes the issue within the framework of contemporary legal relations, aiming to investigate the dogmatic and practical outcomes of the selected theme. The methodology adopts a qualitative approach, of descriptive and explanatory nature, implemented through bibliographic and documentary research in domestic legislation, specialized literature, and settled case law of Superior Courts. The results highlight the imperative need to adapt legal institutes to emerging social and technological paradigms, emphasizing convergences and contradictions within the existing legal order. It concludes by reinforcing the relevance of integrative hermeneutic criteria to preserve legal certainty and the effectiveness of fundamental rights.
+
+ \textbf{Keywords}: Constitutional Law. Legal Relations. Hermeneutics. Legal Certainty. Effectiveness.
+ \end{otherlanguage*}
+\end{resumo}
+
+% --- LISTAS DE ILUSTRAÇÕES, TABELAS E SIGLAS (OPCIONAIS) ---
+\pdfbookmark[0]{\listfigurename}{lof}
+\listoffigures*
+\cleardoublepage
+
+\pdfbookmark[0]{\listtablename}{lot}
+\listoftables*
+\cleardoublepage
+
+\begin{siglas}
+  \item[ABNT] Associação Brasileira de Normas Técnicas
+  \item[CF/88] Constituição da República Federativa do Brasil de 1988
+  \item[CPC] Código de Processo Civil
+  \item[STF] Supremo Tribunal Federal
+  \item[STJ] Superior Tribunal de Justiça
+  \item[TCC] Trabalho de Conclusão de Curso
+\end{siglas}
+\cleardoublepage
+
+% --- SUMÁRIO (OBRIGATÓRIO — ABNT NBR 6027) ---
+\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents*
+\cleardoublepage
+
+% -------------------------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% -------------------------------------------------------------------------
+\textual
+
+% =========================================================================
+% 1. INTRODUÇÃO
+% =========================================================================
+\chapter{INTRODUÇÃO}
+\label{cap:introducao}
+
+A introdução constitui a parte inaugural do trabalho acadêmico, cuja finalidade reside em contextualizar o leitor sobre o tema investigado. Apresenta-se o panorama geral do estudo, a delimitação precisa do problema de pesquisa, a relevância teórica e prática do objeto e a organização estrutural do documento.
+
+\section{Justificativa}
+\label{sec:justificativa}
+A justificativa expõe de maneira clara as razões teóricas, sociais e institucionais que tornam a presente pesquisa indispensável. Conforme preconiza a literatura metodológica, o relato do interesse da comunidade humana e a abrangência da problemática fundamentam a pertinência do estudo no cenário contemporâneo \cite{gil2002metodos}.
+
+\section{Objetivo Geral}
+\label{sec:obj_geral}
+O objetivo geral define a meta nuclear da investigação, estabelecendo a diretriz que articula toda a pesquisa ao problema delimitado.
+
+\section{Objetivos Específicos}
+\label{sec:obj_especificos}
+Os objetivos específicos possuem caráter operacional e instrumental, desdobrando o escopo geral nas etapas necessárias para sua consecução:
+\begin{enumerate}
+    \item Identificar as bases conceituais e normativas aplicáveis ao objeto de estudo;
+    \item Analisar o posicionamento da doutrina majoritária e a jurisprudência dos Tribunais Superiores;
+    \item Confrontar criticamente os dados e hipóteses levantados, propondo diretrizes integradoras para a prática jurídica.
+\end{enumerate}
+
+% =========================================================================
+% 2. FUNDAMENTAÇÃO TEÓRICA
+% =========================================================================
+\chapter{FUNDAMENTAÇÃO TEÓRICA}
+\label{cap:fundamentacao}
+
+A fundamentação teórica revisa o estado da arte e as correntes doutrinárias que sustentam o tema, iniciando com os conceitos fundamentais mais abrangentes até alcançar o núcleo específico da pesquisa.
+
+\section{Diretrizes de Citação no Padrão ABNT}
+As citações sustentam a credibilidade da argumentação científica e dividem-se formalmente em diretas e indiretas.
+
+\subsection{Citação Indireta (Paráfrase)}
+Na citação indireta, o pesquisador reproduz a ideia original com suas próprias palavras, indicando obrigatoriamente a autoria e o ano. Exemplo: Para \citeonline{gil2002metodos}, a classificação das pesquisas científicas exige critérios rigorosos quanto aos objetivos e procedimentos de coleta.
+
+\subsection{Citação Direta Curta (Até 3 Linhas)}
+As transcrições literais com até três linhas devem permanecer inseridas no próprio parágrafo, delimitadas por aspas duplas: ``A pesquisa bibliográfica é desenvolvida a partir de material já elaborado, constituído principalmente de livros e artigos científicos'' \cite[p.~44]{gil2002metodos}.
+
+\subsection{Citação Direta Longa (Mais de 3 Linhas)}
+Quando a citação ultrapassar três linhas, deve ser destacada em parágrafo próprio, com recuo de 4,0~cm da margem esquerda, fonte tamanho 10, espaçamento entrelinhas simples e sem aspas:
+
+\begin{citacao}
+A discussão sobre o objeto da pesquisa constitui etapa fundamental do Trabalho de Conclusão de Curso, destinada à análise crítica e aprofundada do fenômeno delimitado pelo pesquisador, articulando o problema de pesquisa, os objetivos estabelecidos e o referencial teórico adotado. Nesse momento, busca-se ultrapassar a mera exposição descritiva do tema, promovendo o confronto entre os pressupostos teóricos, a realidade investigada e os elementos identificados ao longo da pesquisa \cite[p.~12]{modeloUnivassouras2026}.
+\end{citacao}
+
+% =========================================================================
+% 3. DESENVOLVIMENTO
+% =========================================================================
+\chapter{DESENVOLVIMENTO}
+\label{cap:desenvolvimento}
+
+O desenvolvimento descreve de forma clara, metódica e reprodutível como a pesquisa foi estruturada e conduzida. A redação deve manter tom impessoal e formal, relatando os procedimentos no pretérito.
+
+\section{Caracterização do Objeto de Estudo}
+\label{sec:objeto}
+Descreve-se detalhadamente o fenômeno, conjunto normativo, dados empíricos ou artefato técnico investigado, explicitando suas propriedades, contexto de ocorrência e delimitação temporal e geográfica.
+
+\section{Metodologia da Pesquisa}
+\label{sec:metodologia}
+A presente investigação classifica-se de acordo com os critérios metodológicos consolidados:
+\begin{itemize}
+    \item \textbf{Quanto ao nível de profundidade:} Pesquisa explicativa e descritiva, buscando explicitar causas, nuanças e desdobramentos operacionais do fenômeno;
+    \item \textbf{Quanto aos procedimentos técnicos de coleta:} Pesquisa bibliográfica e documental, orientada pela análise hermenêutica de textos legais, acórdãos e literatura acadêmica.
+\end{itemize}
+
+\section{Procedimentos Metodológicos}
+\label{sec:procedimentos}
+Nesta seção registra-se o roteiro operacional da pesquisa: etapas de amostragem ou seleção de julgados, critérios de inclusão/exclusão, ferramentas de análise e tratamento categorial empregados.
+
+\section{Discussão sobre o Objeto da Pesquisa}
+\label{sec:discussao}
+A discussão não se confunde com a mera síntese descritiva. Representa o espaço de reflexão autoral crítica, no qual o pesquisador confronta teses contrapostas, aponta contradições do sistema normativo e fundamenta sua interpretação com base nas evidências levantadas.
+
+% =========================================================================
+% 4. CONCLUSÃO
+% =========================================================================
+\chapter{CONCLUSÃO}
+\label{cap:conclusao}
+
+A conclusão sintetiza a resposta obtida para o problema central de pesquisa e avalia o cumprimento de cada objetivo formulado.
+
+Destaca-se como as evidências coletadas confirmam ou refutam as hipóteses iniciais, confrontando os resultados com as posições dos autores trazidos no referencial teórico. Por fim, indicam-se as limitações do estudo e sugerem-se desdobramentos analíticos para pesquisas futuras na área.
+
+% -------------------------------------------------------------------------
+% ELEMENTOS PÓS-TEXTUAIS
+% -------------------------------------------------------------------------
+\postextual
+
+% --- REFERÊNCIAS BIBLIOGRÁFICAS (ABNT NBR 6023) ---
+% Alinhamento à esquerda, espaçamento simples, separadas entre si por espaço em branco
+\bibliography{referencias}
+
+% --- APÊNDICES (OPCIONAL — PRODUZIDOS PELO PRÓPRIO AUTOR) ---
+\begin{apendicesenv}
+\partapendices
+
+\chapter{ROTEIRO DE ANÁLISE JURISPRUDENCIAL}
+Texto explicativo com instrumentos de coleta ou formulações concebidas pelo próprio autor do trabalho.
+
+\end{apendicesenv}
+
+% --- ANEXOS (OPCIONAL — DOCUMENTOS EXTERNOS NÃO AUTORAIS) ---
+\begin{anexosenv}
+\partanexos
+
+\chapter{DOCUMENTAÇÃO INSTITUCIONAL E LEGISLAÇÃO}
+Reprodução de atos normativos, contratos-padrão ou documentos de terceiros anexados como subsídio ao estudo.
+
+\end{anexosenv}
+
+\end{document}
